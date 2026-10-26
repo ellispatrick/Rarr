@@ -151,9 +151,8 @@ use_vlen_utf8 <- function() {
       call. = FALSE
     )
   }
-  # numcodecs.lz4 is an alias of lz4
-  canonical_ids <- ids
-  canonical_ids[canonical_ids == "numcodecs.lz4"] <- "lz4"
+  # numcodecs.lz4 and numcodecs.zlib are aliases of lz4 and zlib
+  canonical_ids <- sub("^numcodecs\\.", "", ids)
   if (anyDuplicated(canonical_ids)) {
     stop(
       "Each codec can only be given once, but found ",
@@ -217,7 +216,13 @@ use_vlen_utf8 <- function() {
 #' @noRd
 .codec_v3 <- function(codec) {
   configuration <- codec[names(codec) != "id"]
-  res <- list(name = codec$id)
+  name <- codec$id
+  if (name %in% c("lz4", "zlib")) {
+    # These are not core Zarr v3 codecs, and are registered under the names
+    # zarr-python gives them in numcodecs
+    name <- paste0("numcodecs.", name)
+  }
+  res <- list(name = name)
   if (length(configuration) > 0L) {
     res$configuration <- configuration
   }

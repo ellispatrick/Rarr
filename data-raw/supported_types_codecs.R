@@ -5,6 +5,7 @@ CODEC_BYTES_BYTES <- c(
   "bz2",
   "lzma",
   "numcodecs.lz4",
+  "numcodecs.zlib",
   "lz4",
   "zstd"
 )

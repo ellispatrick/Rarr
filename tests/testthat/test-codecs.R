@@ -176,6 +176,23 @@ test_that("codec: chains of compressors are written and read in order", {
   expect_identical(read_zarr_array(path), m)
 })
 
+test_that("codec: lz4 and zlib use the numcodecs names in Zarr v3", {
+  m <- matrix(runif(20), nrow = 4)
+  path <- withr::local_tempfile(fileext = ".zarr")
+  write_zarr_array(
+    m,
+    path,
+    chunk_dim = c(2, 3),
+    codecs = list(use_zlib(), use_lz4())
+  )
+  codecs <- jsonlite::read_json(file.path(path, "zarr.json"))$codecs
+  expect_identical(
+    vapply(codecs, `[[`, character(1L), "name"),
+    c("transpose", "bytes", "numcodecs.zlib", "numcodecs.lz4")
+  )
+  expect_identical(read_zarr_array(path), m)
+})
+
 test_that("codec: positional arguments are unchanged by `codecs`", {
   path <- withr::local_tempfile(fileext = ".zarr")
   write_zarr_array(array(1:4 + 0.5), path, 2, "double", "F", use_zstd(), -1)

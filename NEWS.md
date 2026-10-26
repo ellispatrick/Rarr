@@ -110,6 +110,9 @@
 
 ## Bug fixes
 
+* Zarr v3 arrays now record the lz4 and zlib codecs as `numcodecs.lz4` and
+  `numcodecs.zlib`, the names other implementations such as zarr-python use,
+  and `numcodecs.zlib` arrays can be read (#270).
 * Arrays with several compressors, as written by other implementations such
   as zarr-python, are now decoded in the right order.
 * Using blosc compression via variable-length types such as when using the 
